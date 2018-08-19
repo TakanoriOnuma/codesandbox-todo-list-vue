@@ -1,11 +1,19 @@
 <template lang="pug">
 .todo-list
   h1.title todolist
-  transition-group(name="flip-list", tag="ul", class="list", appear)
-    template(v-for="todo in todoList")
+  transition-group(
+    tag="ul",
+    class="list",
+    name="flip-list",
+    appear,
+    @before-appear="onBeforeAppear",
+    @after-appear="onAfterAppear"
+  )
+    template(v-for="(todo, index) in todoList")
       li.todo(
         :key="todo.id",
-        :class="{ 'todo--done': todo.isDone }"
+        :class="{ 'todo--done': todo.isDone }",
+        :data-index="index"
       )
         .todo__line
           button.todo__status(
@@ -36,6 +44,15 @@ export default {
       const month = ('00' + (date.getMonth() + 1)).slice(-2); // eslint-disable-line prefer-template
       const day = ('00' + date.getDate()).slice(-2); // eslint-disable-line prefer-template
       return `${year}-${month}-${day}`;
+    }
+  },
+  methods: {
+    onBeforeAppear(el) {
+      // 要素に直接手を加える
+      el.style.transitionDelay = `${el.dataset.index * 0.1}s`;
+    },
+    onAfterAppear(el) {
+      el.style.transitionDelay = '';
     }
   }
 };
