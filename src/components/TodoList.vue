@@ -1,7 +1,7 @@
 <template lang="pug">
 .todo-list
   h1.title todolist
-  transition-group(name="filp-list", tag="ul")
+  transition-group(name="flip-list", tag="ul", class="list", appear)
     template(v-for="todo in todoList")
       li.todo(
         :key="todo.id",
@@ -25,7 +25,7 @@ export default {
   props: {
     todoList: {
       type: Array,
-      default: function() {
+      default() {
         return [];
       }
     }
@@ -33,8 +33,8 @@ export default {
   filters: {
     formatDate(date) {
       const year = date.getFullYear();
-      const month = ('00' + (date.getMonth() + 1)).slice(-2);
-      const day = ('00' + date.getDate()).slice(-2);
+      const month = ('00' + (date.getMonth() + 1)).slice(-2); // eslint-disable-line prefer-template
+      const day = ('00' + date.getDate()).slice(-2); // eslint-disable-line prefer-template
       return `${year}-${month}-${day}`;
     }
   }
@@ -52,24 +52,54 @@ export default {
   text-align: center;
 }
 
-// 本当はこれでflipアニメーションができるのだが上手くいかない
-.flip-list-move {
-  transition: transform 0.5s;
+// transition-groupアニメーション
+.flip-list {
+  // 要素が動くときにtransitionを設定する（.todoでtransitionを設定しているため-moveで書く必要はない）
+  // &-move {
+  //   transition: transform 0.5s;
+  // }
+
+  // 要素が入るときのアニメーション
+  &-enter {
+    &-active {
+      opacity: 0;
+      transform: translate3d(0, -30px, 0);
+    }
+    &-to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  // 要素が消える時のアニメーション
+  &-leave {
+    &-active {
+      position: absolute;
+    }
+    &-to {
+      opacity: 0;
+      transform: translate3d(0, -30px, 0);
+    }
+  }
 }
-.flip-list-leave-active {
-  position: absolute;
+
+.list {
+  position: relative;
 }
 
 .todo {
   $root: &;
+  width: calc(100% - 22px);  // absoluteした時に幅がなくなるので、width指定する
   border: solid 1px #ccc;
   padding: 10px;
   background-color: #fff;
-  transition: transform 0.5s;
+  transition: all 0.5s;
 
-  & + & {
-    margin-top: 10px;
-  }
+  // flipアニメーションで先頭の要素が消えた後にmarginの値が変わって移動するのが変なので、最初から値は統一する
+  margin-top: 10px;
+  // & + & {
+  //   margin-top: 10px;
+  // }
 
   &__line {
     display: flex;
@@ -115,7 +145,7 @@ export default {
       transform: translate3d(-50%, -50%, 0) rotate(45deg);
     }
     &::after {
-      transform: translate3d(-50%, -50%, 0) rotate(135deg); 
+      transform: translate3d(-50%, -50%, 0) rotate(135deg);
     }
   }
 

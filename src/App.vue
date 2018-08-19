@@ -17,7 +17,7 @@ import TodoInputter from './components/TodoInputter';
 import TodoList from './components/TodoList';
 
 export default {
-  name: "App",
+  name: 'App',
   components: {
     TodoInputter,
     TodoList
@@ -56,8 +56,8 @@ export default {
       const newTodo = {
         ...todo,
         id: uuid(),
-        isDone: false        
-      }
+        isDone: false
+      };
       this.todoList = [newTodo].concat(this.todoList);
     },
     /**
